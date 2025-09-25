@@ -5,9 +5,32 @@
 }
 html,
 body,
-main {
+#root {
   width: 100%;
   height: 100%;
+  /* border: 1px solid red; */
 }
 
 
+.weather{
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+}
+.weather-container{
+  padding: 20px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  width: 98%;
+  height: 80%;
+  max-width: 900px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  background-image: url('/src/assets/download.jpg');
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+}
