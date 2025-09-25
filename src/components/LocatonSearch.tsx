@@ -68,7 +68,7 @@ const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect, selec
           value={input}
           onChange={e => setInput(e.target.value)}
         />
-        <button type="submit">Add</button>
+        <button type="submit">Search</button>
       </form>
       <ul>
         {locations.map((loc: string) => (

@@ -41,35 +41,35 @@ const Forecast: React.FC<ForecastProps> = ({ location, units }) => {
   }, [location, units]);
 
   return (
-    <div className="forecast-container">
-      <div style={{ marginBottom: 12 }}>
+    <div className="weather-container forecast-container">
+      <div className="mb-4 flex gap-2">
         <button
           onClick={() => setForecastType('hourly')}
-          style={{ fontWeight: forecastType === 'hourly' ? 'bold' : 'normal', marginRight: 8 }}
+          className={`px-3 py-1 rounded font-semibold transition ${forecastType === 'hourly' ? 'bg-sky-600 text-white' : 'bg-white/80 text-gray-800 dark:bg-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-700'}`}
         >
           Hourly
         </button>
         <button
           onClick={() => setForecastType('daily')}
-          style={{ fontWeight: forecastType === 'daily' ? 'bold' : 'normal' }}
+          className={`px-3 py-1 rounded font-semibold transition ${forecastType === 'daily' ? 'bg-sky-600 text-white' : 'bg-white/80 text-gray-800 dark:bg-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-700'}`}
         >
           Daily
         </button>
       </div>
-      {loading && <p>Loading forecast...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {loading && <p className="text-sky-700 dark:text-sky-300">Loading forecast...</p>}
+      {error && <p className="text-red-600 dark:text-red-400 font-semibold">{error}</p>}
       {forecast && forecastType === 'hourly' && (
         <div>
-          <h3>Hourly Forecast (next 12 hours)</h3>
-          <ul>
+          <h3 className="text-lg font-bold mb-2">Hourly Forecast (next 12 hours)</h3>
+          <ul className="space-y-2">
             {forecast.hourly.slice(0, 12).map((h: any, idx: number) => (
-              <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span>{new Date(h.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}:</span>
-                <img src={`https://openweathermap.org/img/wn/${h.weather[0].icon}@2x.png`} alt={h.weather[0].description} width={32} height={32} />
-                <span>{h.temp}°{units === 'metric' ? 'C' : 'F'}</span>
-                <span>Humidity: {h.humidity}%</span>
-                <span>Wind: {h.wind_speed} {units === 'metric' ? 'm/s' : 'mph'}</span>
-                <span>{h.weather[0].description}</span>
+              <li key={idx} className="flex items-center gap-4 bg-white/70 dark:bg-gray-800/70 rounded-lg px-4 py-2 shadow">
+                <span className="w-16 font-semibold">{new Date(h.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}:</span>
+                <img src={`https://openweathermap.org/img/wn/${h.weather[0].icon}@2x.png`} alt={h.weather[0].description} className="w-8 h-8" />
+                <span className="font-bold text-lg">{h.temp}°{units === 'metric' ? 'C' : 'F'}</span>
+                <span className="ml-2 text-sm">Humidity: {h.humidity}%</span>
+                <span className="ml-2 text-sm">Wind: {h.wind_speed} {units === 'metric' ? 'm/s' : 'mph'}</span>
+                <span className="ml-2 italic text-gray-600 dark:text-gray-300">{h.weather[0].description}</span>
               </li>
             ))}
           </ul>
@@ -77,16 +77,16 @@ const Forecast: React.FC<ForecastProps> = ({ location, units }) => {
       )}
       {forecast && forecastType === 'daily' && (
         <div>
-          <h3>Daily Forecast (next 7 days)</h3>
-          <ul>
+          <h3 className="text-lg font-bold mb-2">Daily Forecast (next 7 days)</h3>
+          <ul className="space-y-2">
             {forecast.daily.slice(0, 7).map((d: any, idx: number) => (
-              <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span>{new Date(d.dt * 1000).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}:</span>
-                <img src={`https://openweathermap.org/img/wn/${d.weather[0].icon}@2x.png`} alt={d.weather[0].description} width={32} height={32} />
-                <span>{d.temp.day}°{units === 'metric' ? 'C' : 'F'}</span>
-                <span>Humidity: {d.humidity}%</span>
-                <span>Wind: {d.wind_speed} {units === 'metric' ? 'm/s' : 'mph'}</span>
-                <span>{d.weather[0].description}</span>
+              <li key={idx} className="flex items-center gap-4 bg-white/70 dark:bg-gray-800/70 rounded-lg px-4 py-2 shadow">
+                <span className="w-32 font-semibold">{new Date(d.dt * 1000).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}:</span>
+                <img src={`https://openweathermap.org/img/wn/${d.weather[0].icon}@2x.png`} alt={d.weather[0].description} className="w-8 h-8" />
+                <span className="font-bold text-lg">{d.temp.day}°{units === 'metric' ? 'C' : 'F'}</span>
+                <span className="ml-2 text-sm">Humidity: {d.humidity}%</span>
+                <span className="ml-2 text-sm">Wind: {d.wind_speed} {units === 'metric' ? 'm/s' : 'mph'}</span>
+                <span className="ml-2 italic text-gray-600 dark:text-gray-300">{d.weather[0].description}</span>
               </li>
             ))}
           </ul>

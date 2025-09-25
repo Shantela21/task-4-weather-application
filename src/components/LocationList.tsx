@@ -24,7 +24,7 @@ export default function LocationList({ saved, onSelect, onDelete }: LocationList
       {saved.map((loc) => (
         <div
           key={loc.id}
-          className="flex justify-between items-center p-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+          className="location-list"
         >
           <div onClick={() => onSelect(loc)} className="flex-1">
             {loc.name}

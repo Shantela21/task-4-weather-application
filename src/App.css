@@ -8,118 +8,308 @@ body,
 #root {
   width: 100%;
   height: 100%;
-  /* border: 1px solid red; */
+  border: 1px solid red;
 }
 
-
-.weather{
-  height: 100%;
-  width: 100%;
-  border-radius: 20px;
+/* Root styling */
+.weather-app {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f1f5f9;
+  color: #111827;
+  font-family: sans-serif;
 }
-.weather-container {
-  position: relative;
-  padding: 32px 24px;
-  margin: 24px auto;
-  border-radius: 24px;
-  width: 98%;
-  max-width: 900px;
-  min-height: 400px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1.5px 4px rgba(0,0,0,0.08);
-  background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)), url('/src/assets/download.jpg');
-  background-size: cover;
-  background-position: center;
+
+.dark-theme {
+  background-color: #111827;
+  color: #f1f5f9;
+}
+
+/* Header */
+.weather-header {
+  max-width: 1024px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.header-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.unit-selector, .theme-toggle {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.theme-toggle {
+  background: none;
+}
+
+/* Main layout */
+.weather-main {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+
+/* Sidebar */
+.sidebar {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
+  gap: 16px;
+}
+
+.sidebar-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.save-btn {
+  background-color: #16a34a;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background-color: #15803d;
+}
+
+.view-selector h3 {
+  font-weight: 600;
+}
+
+.view-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.view-buttons button {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.view-buttons button.active {
+  background-color: #0284c7;
+  color: white;
   border: none;
 }
 
-.weather {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  text-shadow: 1px 2px 8px rgba(0,0,0,0.25);
-  letter-spacing: 1px;
-}
-
-.searchbar-wrapper {
-  margin-bottom: 24px;
+/* Content area */
+.weather-content {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.location-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
+.loading-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.error-msg {
+  padding: 8px;
+  border-radius: 6px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+/* SearchBar container */
 .searchbar-form {
   display: flex;
   gap: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 12px;
 }
 
-.searchbar {
+.dark-theme .searchbar-form {
+  background-color: rgba(31, 41, 55, 0.8); /* dark gray */
+}
+
+/* Input field */
+.searchbar-input {
+  flex: 1;
+  min-width: 0;
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  transition: all 0.2s;
+}
+
+.dark-theme .searchbar-input {
+  border-color: #374151;
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+.searchbar-input:focus {
   outline: none;
-  transition: border 0.2s;
+  box-shadow: 0 0 0 2px #38bdf8; /* sky-400 */
 }
-.searchbar:focus {
-  border: 1.5px solid #0077ff;
-}
+
+/* Button */
 .searchbar-btn {
   padding: 8px 16px;
   border-radius: 8px;
-  background: #0077ff;
-  color: #fff;
   border: none;
+  background-color: #0284c7; /* sky-600 */
+  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
-}
-.searchbar-btn:hover:not(:disabled) {
-  background: #005fcc;
-}
-.searchbar-btn:disabled {
-  background: #b3c6e0;
-  cursor: not-allowed;
+  transition: background-color 0.2s;
 }
 
-.searchbar-results {
-  margin-top: 18px;
-  background: rgba(255,255,255,0.12);
+.searchbar-btn:hover {
+  background-color: #0369a1; /* sky-700 */
+}
+
+.searchbar-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #38bdf8;
+}
+/* WeatherCard container */
+.weathercard-container {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 16px;
   border-radius: 12px;
-  padding: 16px 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-top: 12px;
 }
-.searchbar-result-item {
-  margin-bottom: 8px;
-  font-size: 1.1rem;
+
+.dark-theme .weathercard-container {
+  background-color: rgba(31, 41, 55, 0.85);
+  color: #f3f4f6;
+}
+
+/* Empty state */
+.weathercard-empty {
+  padding: 16px;
+  text-align: center;
+  color: gray;
+}
+
+/* Header: current temp + details */
+.weathercard-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  margin-bottom: 12px;
 }
-.result-row {
-  display: flex;
-  gap: 18px;
-  align-items: center;
+
+.weathercard-current .weathercard-temp {
+  font-size: 2rem;
+  font-weight: bold;
 }
-.result-time {
-  font-weight: 500;
-  color: #e0e0e0;
+
+.weathercard-current .weathercard-description {
+  font-size: 0.875rem;
+  color: #4b5563;
 }
-.result-temp {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #fff;
+
+.dark-theme .weathercard-current .weathercard-description {
+  color: #d1d5db;
 }
-.searchbar-error {
-  color: #ffb3b3;
-  background: rgba(255,0,0,0.08);
-  padding: 8px 12px;
+
+.weathercard-details {
+  font-size: 0.875rem;
+}
+
+/* Forecast sections */
+.weathercard-forecast {
+  margin-top: 12px;
+}
+
+/* Hourly forecast grid */
+.weathercard-hourly {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.weathercard-hour {
+  border: 1px solid #d1d5db;
+  padding: 8px;
   border-radius: 8px;
-  margin-top: 10px;
-  font-weight: 500;
+  text-align: center;
 }
+
+.dark-theme .weathercard-hour {
+  border-color: #374151;
+}
+
+/* Hourly info */
+.weathercard-hour-time {
+  font-size: 0.875rem;
+}
+.weathercard-hour-temp {
+  font-weight: 600;
+}
+.weathercard-hour-hum {
+  font-size: 0.75rem;
+}
+
+/* Daily forecast grid */
+.weathercard-daily {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.weathercard-day {
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.dark-theme .weathercard-day {
+  border-color: #374151;
+}
+
+/* Daily info */
+.weathercard-day-date {
+  font-weight: 600;
+}
+.weathercard-day-temp {
+  margin-top: 4px;
+}
+.weathercard-day-hum {
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+
+/* Footer */
+.app-footer {
+  max-width: 1024px;
+  margin: 32px auto 0 auto;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
