@@ -1,73 +1,115 @@
-# React + TypeScript + Vite
+# Weather Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React application built with Vite, featuring routing, a shared header, and two main pages: Home and Settings. Styled using TailwindCSS.
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Features](#features)  
+- [Technologies Used](#technologies-used)  
+- [Getting Started](#getting-started)  
+- [Project Structure](#project-structure)  
+- [Available Scripts](#available-scripts)  
+- [Contributing](#contributing)  
+- [License](#license)  
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Modern React setup with Vite  
+- Client-side routing using `react-router-dom`  
+- Reusable `Header` component  
+- Home and Settings pages  
+- TailwindCSS styling  
+- Redirect unknown routes to Home  
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 18  
+- Vite  
+- TailwindCSS 3  
+- TypeScript  
+- PostCSS & Autoprefixer  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js v18+  
+- npm or yarn  
+
+## Installation
+
+### 1.  Clone the repository:
+
+```bash
+git clone <your-repo-url>
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+###  2. Navigate to the project folder:
+```bash
+cd weather-application
 ```
+
+###  3. Install dependencies:
+
+```bash
+npm install
+```
+## Running the App
+```bash
+npm run dev
+```
+
+# or
+```
+yarn dev
+```
+ Open http://localhost:5173
+ to view the app in your browser.
+
+ ## Preview the production build:
+ ```bash
+npm run preview
+```
+# or
+```
+yarn preview
+```
+
+## Building for Production
+```bash
+npm run build
+```
+## or
+```
+yarn build
+```
+## Project Structure
+```
+weather-application/
+├─ public/
+├─ src/
+│  ├─ components/
+│  │  └─ Header.tsx
+│  ├─ pages/
+│  │  ├─ Home.tsx
+│  │  └─ Settings.tsx
+│  ├─ App.tsx
+│  └─ main.tsx
+├─ index.html
+├─ package.json
+├─ tailwind.config.js
+└─ postcss.config.js
+```
+## Available Scripts
+
+npm run dev — Start development server
+
+npm run build — Build production files
+
+npm run preview — Preview production build
+
+## Contributing
+Feel free to submit issues or pull requests. Please follow the code style and conventions used in the project.
+
+## Author
+Shantela Noyila
