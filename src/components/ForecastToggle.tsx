@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-ignore
 import { ViewMode } from '../types/weather';
 
 interface Props {

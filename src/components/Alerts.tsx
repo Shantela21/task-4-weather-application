@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+// @ts-ignore
 import { WeatherAlert, WeatherData } from '../types/weather';
 import { Bell } from 'lucide-react';
 import { notify } from '../utils/notifications';

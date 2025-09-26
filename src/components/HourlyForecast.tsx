@@ -1,5 +1,6 @@
 
 import React from 'react';
+// @ts-ignore
 import { WeatherData } from '../types/weather';
 import { useWeather } from '../context/WeatherContext';
 

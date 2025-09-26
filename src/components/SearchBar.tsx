@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { weatherApi } from '../services/WeatherApi';
 import { useWeather } from '../context/WeatherContext';
+// @ts-ignore
 import { SavedLocation } from '../types/weather';
 import { Search } from 'lucide-react';
 

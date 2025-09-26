@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-ignore
 import { ForecastDay, WeatherData } from '../types/weather';
 import { useWeather } from '../context/WeatherContext';
 

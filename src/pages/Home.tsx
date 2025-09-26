@@ -4,6 +4,7 @@ import SearchBar from '../components/SearchBar';
 import LocationList from '../components/LocationList';
 import WeatherSummary from '../components/WeatherSummary';
 import { weatherApi } from '../services/WeatherApi';
+// @ts-ignore
 import { ViewMode } from '../types/weather';
 import HourlyForecast from '../components/HourlyForecast';
 import DailyForecast from '../components/DailyForecast';

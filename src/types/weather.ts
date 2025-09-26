@@ -1,3 +1,4 @@
+
 export interface WeatherData {
   location: {
     name: string;

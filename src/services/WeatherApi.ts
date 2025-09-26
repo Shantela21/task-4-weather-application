@@ -1,4 +1,4 @@
-import { WeatherData } from '../types/weather';
+import type { WeatherData } from '../types/weather';
 
 // Switched to Open-Meteo (no API key required)
 const OM_FORECAST = 'https://api.open-meteo.com/v1/forecast';

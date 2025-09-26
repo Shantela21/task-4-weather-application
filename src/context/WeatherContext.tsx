@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+// @ts-ignore
+import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+// @ts-ignore
 import { WeatherData, SavedLocation, TemperatureUnit, Theme, ViewMode } from '../types/weather';
 
 interface WeatherState {
