@@ -1,21 +1,33 @@
 import React, { useEffect } from 'react';
-// @ts-ignore
-import { WeatherAlert, WeatherData } from '../types/weather';
 import { Bell } from 'lucide-react';
 import { notify } from '../utils/notifications';
+
+// Fallback interfaces if import fails
+interface WeatherAlert {
+  id: string;
+  event: string;
+  severity: string;
+  headline?: string;
+  desc?: string;
+  expires?: string;
+}
+
+interface WeatherData {
+  alerts?: WeatherAlert[];
+}
 
 interface Props {
   data: WeatherData;
 }
 
 const Alerts: React.FC<Props> = ({ data }) => {
-  const alerts: WeatherAlert[] = data.alerts ?? [];
+  const alerts: WeatherAlert[] = data?.alerts ?? [];
 
   useEffect(() => {
-    // Send browser notifications for severe alerts
-    alerts.forEach((a) => {
-      if (a.severity?.toLowerCase() === 'severe' || a.severity?.toLowerCase() === 'extreme') {
-        notify(`${a.event} (${a.severity})`, a.headline || a.desc);
+    alerts.forEach((alert) => {
+      const severity = alert.severity?.toLowerCase();
+      if (severity === 'severe' || severity === 'extreme') {
+        notify(`${alert.event} (${alert.severity})`, alert.headline || alert.desc || '');
       }
     });
   }, [alerts]);
@@ -24,14 +36,16 @@ const Alerts: React.FC<Props> = ({ data }) => {
 
   return (
     <div className="alerts">
-      {alerts.map((a) => (
-        <div key={a.id} className="alert">
+      {alerts.map((alert) => (
+        <div key={alert.id} className="alert">
           <Bell className="alert__icon" />
           <div className="alert__body">
-            <div className="alert__title">{a.event} — {a.severity}</div>
-            <div className="alert__text">{a.headline || a.desc}</div>
-            {a.expires && (
-              <div className="alert__expires">Expires: {new Date(a.expires).toLocaleString()}</div>
+            <div className="alert__title">{alert.event} — {alert.severity}</div>
+            <div className="alert__text">{alert.headline || alert.desc}</div>
+            {alert.expires && (
+              <div className="alert__expires">
+                Expires: {new Date(alert.expires).toLocaleString()}
+              </div>
             )}
           </div>
         </div>

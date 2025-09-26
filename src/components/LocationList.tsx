@@ -1,7 +1,7 @@
 import React from 'react';
 import { useWeather } from '../context/WeatherContext';
-// @ts-ignore
-import { SavedLocation } from '../types/weather';
+
+import { type SavedLocation } from '../types/weather';
 import { MapPin, Trash2 } from 'lucide-react';
 
 interface Props {

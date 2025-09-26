@@ -127,20 +127,12 @@ export interface SavedLocation {
 }
 
 export interface WeatherAlert {
-  id: string;
-  headline: string;
-  msgtype: string;
-  severity: string;
-  urgency: string;
-  areas: string;
-  category: string;
-  certainty: string;
+    id: string;
   event: string;
-  note: string;
-  effective: string;
-  expires: string;
-  desc: string;
-  instruction: string;
+  severity: string;
+  headline?: string;
+  desc?: string;
+  expires?: string;
 }
 
 export type TemperatureUnit = 'celsius' | 'fahrenheit';
