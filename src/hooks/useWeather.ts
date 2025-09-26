@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import type { Coord, WeatherResponse } from "../types"; // prefer no .ts extension
+import type { Coord, WeatherResponse } from "../utils/notifications"; // prefer no .ts extension
 
 const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
 const RAPIDAPI_HOST = import.meta.env.VITE_RAPIDAPI_HOST;
