@@ -1,7 +1,7 @@
-// @ts-ignore
+
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-// @ts-ignore
-import { WeatherData, SavedLocation, TemperatureUnit, Theme, ViewMode } from '../types/weather';
+import * as WeatherTypes from '../types/weather';
+import type { WeatherData, SavedLocation, TemperatureUnit, Theme, ViewMode } from '../types/weather';
 
 interface WeatherState {
   currentWeather: WeatherData | null;
@@ -68,6 +68,14 @@ const weatherReducer = (state: WeatherState, action: WeatherAction): WeatherStat
       return state;
   }
 };
+const test: WeatherTypes.SavedLocation = {
+  id: '1',
+  name: 'Test City',
+  country: 'Testland',
+  lat: 0,
+  lon: 0
+};
+
 
 interface WeatherContextType {
   state: WeatherState;

@@ -3,7 +3,7 @@ import { Bell } from 'lucide-react';
 import { notify } from '../utils/notifications';
 
 // Fallback interfaces if import fails
-interface WeatherAlert {
+export interface WeatherAlert {
   id: string;
   event: string;
   severity: string;
@@ -12,7 +12,7 @@ interface WeatherAlert {
   expires?: string;
 }
 
-interface WeatherData {
+export interface WeatherData {
   alerts?: WeatherAlert[];
 }
 
@@ -40,8 +40,10 @@ const Alerts: React.FC<Props> = ({ data }) => {
         <div key={alert.id} className="alert">
           <Bell className="alert__icon" />
           <div className="alert__body">
-            <div className="alert__title">{alert.event} — {alert.severity}</div>
-            <div className="alert__text">{alert.headline || alert.desc}</div>
+            <div className="alert__title">
+              {alert.event ?? 'Unknown Event'} — {alert.severity ?? 'Unknown Severity'}
+            </div>
+            <div className="alert__text">{alert.headline || alert.desc || 'No description'}</div>
             {alert.expires && (
               <div className="alert__expires">
                 Expires: {new Date(alert.expires).toLocaleString()}
