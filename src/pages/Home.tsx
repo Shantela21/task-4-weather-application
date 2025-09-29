@@ -9,7 +9,7 @@ import type { ViewMode } from '../types/weather';
 import HourlyForecast from '../components/HourlyForecast';
 import DailyForecast from '../components/DailyForecast';
 import ForecastToggle from '../components/ForecastToggle';
-import { getCurrentPosition } from '../utils/geolocation';
+import { getCurrentPosition } from '../utils/Geolocation';
 import Alerts from '../components/Alerts';
 
 const Home: React.FC = () => {
