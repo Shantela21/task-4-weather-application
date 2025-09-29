@@ -16,33 +16,36 @@ A simple React application built with Vite, featuring routing, a shared header, 
 ## Features
 
 - Modern React setup with Vite  
-- Client-side routing using `react-router-dom`  
-- Reusable `Header` component  
-- Home and Settings pages  
-- TailwindCSS styling  
-- Redirect unknown routes to Home  
+-- Modern React setup with **TypeScript**
+- **CRACO** for easy configuration without ejecting
+- **TailwindCSS** styling
+- **React Router DOM** for routing
+- **Testing Library** for unit and integration tests
+- Environment-ready with **web-vitals** for performance metrics
 
 ## Technologies Used
 
-- React 18  
-- Vite  
-- TailwindCSS 3  
-- TypeScript  
-- PostCSS & Autoprefixer  
+- [React 19](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [CRACO](https://github.com/dilanx/craco)
+- [React Router DOM](https://reactrouter.com/)
+- [Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- [Web Vitals](https://web.dev/vitals/)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js v18+  
-- npm or yarn  
+- [Node.js](https://nodejs.org/) v18+
+- npm or yarn 
 
 ## Installation
 
 ### 1.  Clone the repository:
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Shantela21/task-4-weather-application
 ```
 
 ###  2. Navigate to the project folder:
