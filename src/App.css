@@ -332,13 +332,22 @@ body,
 .summary__top { display: flex; align-items: center; justify-content: space-between; }
 .summary__title { font-size: 1.25rem; font-weight: 600; color: #111827; }
 .summary__subtitle { font-size: 0.85rem; color: #6b7280; }
-.dark .summary__title { color: #e5e7eb; }
+
+
+.dark .summary__title { 
+  color: #e5e7eb;
+ }
 .dark .summary__subtitle { color: #94a3b8; }
+
 .summary__icon { width: 64px; height: 64px; }
+
 .summary__mid { display: flex; align-items: flex-end; gap: 1rem; }
+
 .summary__temp { font-size: 3rem; font-weight: 700; color: #111827; line-height: 1; }
+
 .summary__cond { color: #6b7280; margin-bottom: 0.35rem; }
 .dark .summary__temp { color: #f3f4f6; }
+
 .dark .summary__cond { color: #94a3b8; }
 .summary__meta { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; font-size: 0.9rem; }
 .summary__meta-item { display: inline-flex; align-items: center; gap: 0.5rem; color: #374151; }
@@ -363,62 +372,181 @@ body,
   border: 1px solid #e5e7eb;
   background: #ffffff;
 }
-.loclist__select { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; border: 0; cursor: pointer; text-align: left; }
-.loclist__pin { width: 16px; height: 16px; color: #2563eb; }
-.loclist__name { color: #111827; font-weight: 600; }
-.loclist__country { font-size: 0.75rem; color: #6b7280; }
-.dark .loclist__name { color: #e5e7eb; }
-.dark .loclist__country { color: #94a3b8; }
-.loclist__remove { padding: 0.35rem; border-radius: 0.4rem; background: transparent; border: 1px solid #e5e7eb; cursor: pointer; }
-.loclist__remove:hover { background: #f3f4f6; }
-.loclist__remove-icon { width: 16px; height: 16px; color: #6b7280; }
-.loclist__empty { grid-column: 1 / -1; text-align: center; color: #6b7280; padding: 0.5rem 0; }
+.loclist__select { 
+  display: inline-flex; 
+  align-items: center;
+   gap: 0.5rem;
+    background: transparent;
+     border: 0;
+      cursor: pointer;
+      text-align: left; }
+
+.loclist__pin { 
+  width: 16px;
+   height: 16px;
+    color: #2563eb;
+   }
+
+.loclist__name { 
+  color: #111827;
+   font-weight: 600;
+   }
+
+.loclist__country { 
+  font-size: 0.75rem;
+   color: #6b7280;
+   }
+
+.dark .loclist__name {
+   color: #e5e7eb; 
+  }
+
+.dark .loclist__country { 
+  color: #94a3b8;
+ }
+
+.loclist__remove { padding: 0.35rem;
+   border-radius: 0.4rem;
+    background: transparent;
+     border: 1px solid #e5e7eb;
+      cursor: pointer;
+     }
+
+.loclist__remove:hover {
+   background: #f3f4f6;
+   }
+
+.loclist__remove-icon { 
+  width: 16px;
+   height: 16px;
+    color: #6b7280;
+   }
+
+.loclist__empty {
+   grid-column: 1 / -1;
+    text-align: center;
+     color: #6b7280;
+      padding: 0.5rem 0;
+     }
+
 
 /* ==========================
    Hourly forecast
    ========================== */
 
-.hourly { width: 100%; overflow-x: auto; }
-.hourly__grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 0.75rem; min-width: 640px; }
+.hourly {
+   width: 100%;
+    overflow-x: auto;
+   }
+
+.hourly__grid { 
+  display: grid;
+   grid-template-columns: repeat(12, minmax(0,1fr));
+    gap: 0.75rem;
+     min-width: 640px; 
+    }
+
 @media (min-width: 768px) { .hourly__grid { grid-template-columns: repeat(24, minmax(0,1fr)); } }
-.hourly__card { display: flex; flex-direction: column; align-items: center; border: 1px solid #e5e7eb; background: #ffffff; border-radius: 0.5rem; padding: 0.75rem; }
-.hourly__time { font-size: 0.75rem; color: #6b7280; }
-.hourly__icon { width: 40px; height: 40px; }
-.hourly__temp { font-size: 0.9rem; font-weight: 600; color: #111827; }
-.hourly__rain { font-size: 0.75rem; color: #6b7280; }
-.dark .hourly__card { background: #0f172a; border-color: #1f2937; }
-.dark .hourly__temp { color: #e5e7eb; }
-.dark .hourly__time, .dark .hourly__rain { color: #94a3b8; }
 
-/* ==========================
-   Daily forecast
-   ========================== */
+.hourly__card { 
+  display: flex;
+   flex-direction: column;
+    align-items: center;
+     border: 1px solid #e5e7eb;
+      background: #ffffff;
+       border-radius: 0.5rem;
+        padding: 0.75rem;
+       }
 
-.daily { display: grid; gap: 0.75rem; }
+.hourly__time { 
+  font-size: 0.75rem;
+   color: #6b7280;
+   }
+
+.hourly__temp {
+   font-size: 0.9rem;
+    font-weight: 600;
+     color: #111827;
+     }
+
+.hourly__rain { 
+  font-size: 0.75rem;
+   color: #6b7280;
+   }
+
+.dark .hourly__card { 
+  background: #0f172a; 
+  border-color: #1f2937;
+ }
+
+.dark .hourly__temp {
+   color: #e5e7eb; 
+  }
+
+.dark .hourly__time, .dark .hourly__rain {
+   color: #94a3b8;
+   }
+
+/* Daily forecast*/
+
+.daily { 
+  display: grid;
+  gap: 0.75rem;
+   }
+
 .daily__card { display: flex; align-items: center; justify-content: space-between; border: 1px solid #e5e7eb; background: #ffffff; border-radius: 0.5rem; padding: 1rem; }
+
 .daily__date { width: 7rem; color: #4b5563; font-size: 0.9rem; }
+
 .daily__cond { display: inline-flex; align-items: center; gap: 0.75rem; }
+
 .daily__icon { width: 40px; height: 40px; }
+
 .daily__cond-text { color: #111827; font-size: 0.9rem; }
+
 .daily__rain { color: #111827; font-size: 0.9rem; }
+
 .daily__max { color: #111827; font-weight: 600; }
+
 .daily__min { color: #6b7280; }
+
 .dark .daily__card { background: #0f172a; border-color: #1f2937; }
+
 .dark .daily__cond-text, .dark .daily__rain, .dark .daily__max { color: #e5e7eb; }
+
 .dark .daily__date, .dark .daily__min { color: #94a3b8; }
 
 /* ==========================
    Forecast toggle
    ========================== */
 
-.ftoggle { display: inline-flex; gap: 0.5rem; }
-.ftoggle__btn { padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background: #ffffff; color: #374151; cursor: pointer; }
-.ftoggle__btn--active { background: #2563eb; color: #ffffff; border-color: #2563eb; }
-.dark .ftoggle__btn { background: #0f172a; color: #e5e7eb; border-color: #1f2937; }
+.ftoggle {
+   display: inline-flex;
+    gap: 0.5rem;
+   }
 
-/* ==========================
-   Alerts
-   ========================== */
+.ftoggle__btn {
+   padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+     border: 1px solid #e5e7eb; 
+     background: #ffffff; 
+     color: #374151; 
+     cursor: pointer; 
+    }
+
+.ftoggle__btn--active { 
+  background: #2563eb;
+   color: #ffffff;
+    border-color: #2563eb;
+   }
+
+.dark .ftoggle__btn { 
+  background: #0f172a;
+   color: #e5e7eb;
+   border-color: #1f2937;
+   }
+
+/*Alerts */
 
 .alerts { display: grid; gap: 0.75rem; }
 .alert { display: flex; align-items: flex-start; gap: 0.75rem; padding: 1rem; border: 1px solid #fecaca; background: #fef2f2; border-radius: 0.5rem; }
