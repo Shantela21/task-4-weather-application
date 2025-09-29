@@ -1,3 +1,4 @@
+<img src="https://socialify.git.ci/Shantela21/task-4-weather-application/image?language=1&owner=1&name=1&stargazers=1&theme=Light" alt="task-4-weather-application" width="640" height="320" />
 # Weather Application
 
 A simple React application built with Vite, featuring routing, a shared header, and two main pages: Home and Settings. Styled using TailwindCSS.
