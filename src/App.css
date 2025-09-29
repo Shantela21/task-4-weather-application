@@ -1,3 +1,4 @@
+
 * {
   padding: 0;
   margin: 0;
@@ -56,7 +57,7 @@ body,
    ========================== */
 
 .home {
-  max-width: 72rem; /* ~1152px */
+  max-width: 72rem; 
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
@@ -65,7 +66,7 @@ body,
   padding-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* vertical spacing between blocks */
+  gap: 1.5rem; 
 }
 
 .home__status {
@@ -74,11 +75,11 @@ body,
 }
 
 .home__status--loading {
-  color: #6b7280; /* gray-500 */
+  color: #6b7280; 
 }
 
 .home__status--error {
-  color: #dc2626; /* red-600 */
+  color: #dc2626; 
 }
 
 .home__forecast-header {
@@ -88,25 +89,20 @@ body,
 }
 
 .home__forecast-title {
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 600;     /* semibold */
-  color: #1f2937;       /* gray-800 */
+  font-size: 1.125rem; 
+  font-weight: 600;    
+  color: #1f2937;       
 }
 
-/* Optional dark mode tweaks when a .dark class is present on html */
 .dark .home__forecast-title {
-  color: #f3f4f6; /* near-white */
+  color: #f3f4f6; 
 }
 
-/* ==========================
-   SearchBar styles (semantic)
-   ========================== */
-
-.searchbar {
+/* .searchbar {
   position: relative;
   width: 100%;
-  max-width: 36rem; /* 576px */
-}
+  max-width: 36rem; 
+} */
 
 .searchbar__form {
   display: flex;
@@ -119,8 +115,8 @@ body,
   align-items: center;
   flex: 1 1 auto;
   background: #ffffff;
-  border: 1px solid #e5e7eb; /* gray-200 */
-  border-radius: 0.5rem; /* 8px */
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem; 
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
 }
 
