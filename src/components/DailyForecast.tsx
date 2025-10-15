@@ -14,10 +14,10 @@ const DailyCard: React.FC<{ day: ForecastDay }> = ({ day }) => {
   const date = new Date(day.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
   return (
-    <div className="daily__card">
+    <div className="daily__card" >
       <div className="daily__date">{date}</div>
       <div className="daily__cond">
-        <img src={day.day.condition.icon} alt={day.day.condition.text} className="daily__icon" />
+        {/* <img src={day.day.condition.icon} alt={day.day.condition.text} className="daily__icon" /> */}
         <div className="daily__cond-text">{day.day.condition.text}</div>
       </div>
       <div className="daily__rain">Rain: {day.day.daily_chance_of_rain}%</div>
@@ -25,7 +25,9 @@ const DailyCard: React.FC<{ day: ForecastDay }> = ({ day }) => {
       <div className="daily__min">{min}</div>
     </div>
   );
+  // console.log(day.day.condition.icon);
 };
+
 
 const DailyForecast: React.FC<Props> = ({ data }) => {
   const days = data.forecast?.forecastday ?? [];

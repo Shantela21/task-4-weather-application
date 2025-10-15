@@ -21,7 +21,7 @@ const HourlyForecast: React.FC<Props> = ({ data }) => {
           return (
             <div key={h.time_epoch} className="hourly__card">
               <div className="hourly__time">{time}</div>
-              <img src={h.condition.icon} alt={h.condition.text} className="hourly__icon" />
+              <span className="hourly__icon" title={h.condition.text}>{h.condition.icon}</span>
               <div className="hourly__temp">{temp}</div>
               <div className="hourly__rain">{h.chance_of_rain}% rain</div>
             </div>
