@@ -41,7 +41,7 @@ export class WeatherApiService {
     if (coordMatch) {
       const lat = parseFloat(coordMatch[1]);
       const lon = parseFloat(coordMatch[3]);
-      return { lat, lon, name: 'Custom Location', country: 'Unknown', admin1: 'Unknown' };
+      return { lat, lon, name: 'Current Location', country: 'Unknown', admin1: 'Unknown' };
     }
 
     const NOMINATIM_API = 'https://nominatim.openstreetmap.org/search';
@@ -103,6 +103,32 @@ export class WeatherApiService {
     return directions[index];
   }
 
+  private calculateRainChance(precipitationMm: number, weatherCode: number): number {
+    // Base chance on precipitation amount
+    let chance = 0;
+    
+    if (precipitationMm > 0) {
+      // If there's any precipitation, start with a base chance
+      if (precipitationMm < 0.1) chance = 10;
+      else if (precipitationMm < 0.5) chance = 25;
+      else if (precipitationMm < 1.0) chance = 40;
+      else if (precipitationMm < 2.5) chance = 60;
+      else if (precipitationMm < 5.0) chance = 80;
+      else chance = 95;
+    }
+    
+    // Adjust based on weather code
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(weatherCode)) {
+      // Rain-related weather codes - increase chance
+      chance = Math.max(chance, 30);
+      if ([63, 65, 67, 81, 82, 95, 96, 99].includes(weatherCode)) {
+        chance = Math.max(chance, 70); // Heavy rain/thunderstorm codes
+      }
+    }
+    
+    return Math.min(100, chance);
+  }
+
   // --- Daily/hourly forecast processing ---
   private processDailyForecast(daily: any, hourly: any): any[] {
     if (!daily || !daily.time) return [];
@@ -121,6 +147,7 @@ export class WeatherApiService {
         maxwind_kph: this.msToKmph(daily.wind_speed_10m_max[index]),
         totalprecip_mm: Math.round(daily.precipitation_sum[index] * 10) / 10,
         totalprecip_in: Math.round((daily.precipitation_sum[index] / 25.4) * 100) / 100,
+        daily_chance_of_rain: this.calculateRainChance(daily.precipitation_sum[index], daily.weathercode[index]),
         condition: {
           text: this.wmoToText(daily.weathercode[index]),
           icon: this.getWeatherIcon(daily.weathercode[index]),
@@ -168,6 +195,7 @@ private processHourlyForecastForDate(date: string, hourly: {
     wind_dir: this.getWindDirection(hourly.winddirection_10m[index]),
     precip_mm: Math.round(hourly.precipitation[index] * 10) / 10,
     precip_in: Math.round((hourly.precipitation[index] / 25.4) * 100) / 100,
+    chance_of_rain: this.calculateRainChance(hourly.precipitation[index], hourly.weathercode[index]),
     feelslike_c: Math.round(hourly.apparent_temperature[index] * 10) / 10,
     feelslike_f: this.celsiusToFahrenheit(hourly.apparent_temperature[index])
   }));

@@ -19,7 +19,7 @@ const WeatherSummary: React.FC<Props> = ({ data }) => {
           <div className="summary__title">{data.location.name}</div>
           <div className="summary__subtitle">{data.location.country}</div>
         </div>
-        <img src={data.current.condition.icon} alt={data.current.condition.text} className="summary__icon" />
+        <span className="summary__icon" title={data.current.condition.text}>{data.current.condition.icon}</span>
       </div>
       <div className="summary__mid">
         <div className="summary__temp">{temp}</div>
