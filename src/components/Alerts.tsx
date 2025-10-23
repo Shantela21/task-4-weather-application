@@ -1,20 +1,7 @@
 import React, { useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { notify } from '../utils/notifications';
-
-// Fallback interfaces if import fails
-export interface WeatherAlert {
-  id: string;
-  event: string;
-  severity: string;
-  headline?: string;
-  desc?: string;
-  expires?: string;
-}
-
-export interface WeatherData {
-  alerts?: WeatherAlert[];
-}
+import type { WeatherAlert, WeatherData } from '../types/weather';
 
 interface Props {
   data: WeatherData;

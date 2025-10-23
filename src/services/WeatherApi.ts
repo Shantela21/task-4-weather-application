@@ -5,7 +5,14 @@ const OM_FORECAST = 'https://api.open-meteo.com/v1/forecast';
 export class WeatherApiService {
   private static instance: WeatherApiService;
   private cache: Map<string, { data: WeatherData; timestamp: number }> = new Map();
-  private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+  private readonly CACHE_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+  private readonly DEFAULT_HUMIDITY = 50;
+  private readonly DEFAULT_CLOUD = 0;
+  private readonly DEFAULT_VIS_KM = 10;
+  private readonly DEFAULT_VIS_MILES = 6.2;
+  private readonly DEFAULT_UV = 0;
+  private readonly DEFAULT_PRESSURE_MB = 1013;
+  private readonly DEFAULT_PRESSURE_IN = 29.92;
 
   public static getInstance(): WeatherApiService {
     if (!WeatherApiService.instance) {
@@ -19,7 +26,7 @@ export class WeatherApiService {
   }
 
   private isValidCache(timestamp: number): boolean {
-    return Date.now() - timestamp < this.CACHE_DURATION;
+    return Date.now() - timestamp < this.CACHE_DURATION_MS;
   }
 
   private async makeRequest(url: string): Promise<any> {
@@ -76,13 +83,14 @@ export class WeatherApiService {
   }
 
   private getWeatherIcon(code: number, isDay: number = 1): string {
+    // Using Lucide React icon names instead of emojis
     const iconMap: Record<number, string> = {
-      0: isDay ? '☀️' : '🌙', 1: isDay ? '🌤️' : '🌤️', 2: '⛅', 3: '☁️',
-      45: '🌫️', 48: '🌫️', 51: '🌦️', 53: '🌦️', 55: '🌦️',
-      61: '🌧️', 63: '🌧️', 65: '🌧️', 71: '🌨️', 73: '🌨️', 75: '🌨️',
-      80: '🌦️', 81: '🌦️', 82: '🌦️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
+      0: isDay ? 'sun' : 'moon', 1: 'sun', 2: 'cloud-sun', 3: 'cloud',
+      45: 'cloud-fog', 48: 'cloud-fog', 51: 'cloud-drizzle', 53: 'cloud-drizzle', 55: 'cloud-drizzle',
+      61: 'cloud-rain', 63: 'cloud-rain', 65: 'cloud-rain', 71: 'cloud-snow', 73: 'cloud-snow', 75: 'cloud-snow',
+      80: 'cloud-drizzle', 81: 'cloud-drizzle', 82: 'cloud-drizzle', 95: 'cloud-lightning', 96: 'cloud-lightning', 99: 'cloud-lightning'
     };
-    return iconMap[code] || '🌈';
+    return iconMap[code] || 'cloud';
   }
 
   private celsiusToFahrenheit(c: number): number {
@@ -153,7 +161,15 @@ export class WeatherApiService {
           icon: this.getWeatherIcon(daily.weathercode[index]),
           code: daily.weathercode[index]
         },
-        uv: 0
+        uv: this.DEFAULT_UV
+      },
+      astro: {
+        sunrise: daily.sunrise?.[index] || '06:00',
+        sunset: daily.sunset?.[index] || '18:00',
+        moonrise: '00:00', // Not available in Open-Meteo free tier
+        moonset: '00:00',
+        moon_phase: 'New Moon',
+        moon_illumination: '0'
       },
       hour: this.processHourlyForecastForDate(date, hourly)
     }));
@@ -214,7 +230,7 @@ private processHourlyForecastForDate(date: string, hourly: {
       longitude: lon.toString(),
       current_weather: 'true',
       hourly: 'temperature_2m,weathercode,apparent_temperature,precipitation,windspeed_10m,winddirection_10m,is_day',
-      daily: 'temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant',
+      daily: 'temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,sunrise,sunset',
       timezone: 'auto',
       forecast_days: days.toString()
     });
@@ -234,17 +250,17 @@ private processHourlyForecastForDate(date: string, hourly: {
         wind_mph: this.msToMph(data.current_weather.windspeed_10m),
         wind_kph: this.msToKmph(data.current_weather.windspeed_10m),
         wind_dir: this.getWindDirection(data.current_weather.winddirection_10m),
-        pressure_mb: 1013,
-        pressure_in: 29.92,
+        pressure_mb: this.DEFAULT_PRESSURE_MB,
+        pressure_in: this.DEFAULT_PRESSURE_IN,
         precip_mm: data.current_weather.precipitation,
         precip_in: Math.round(data.current_weather.precipitation / 25.4 * 100) / 100,
-        humidity: 50,
-        cloud: 0,
+        humidity: this.DEFAULT_HUMIDITY,
+        cloud: this.DEFAULT_CLOUD,
         feelslike_c: Math.round(data.current_weather.apparent_temperature * 10) / 10,
         feelslike_f: this.celsiusToFahrenheit(data.current_weather.apparent_temperature),
-        vis_km: 10,
-        vis_miles: 6.2,
-        uv: 0,
+        vis_km: this.DEFAULT_VIS_KM,
+        vis_miles: this.DEFAULT_VIS_MILES,
+        uv: this.DEFAULT_UV,
         gust_mph: this.msToMph(data.current_weather.windspeed_10m),
         gust_kph: this.msToKmph(data.current_weather.windspeed_10m)
       },

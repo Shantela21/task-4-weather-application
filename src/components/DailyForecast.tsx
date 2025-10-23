@@ -1,11 +1,27 @@
 import React from 'react';
 import { type ForecastDay, type WeatherData } from '../types/weather';
-
 import { useWeather } from '../context/WeatherContext';
+import { Sun, Moon, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudSnow, CloudLightning } from 'lucide-react';
 
 interface Props {
   data: WeatherData;
 }
+
+const getWeatherIcon = (iconName: string) => {
+  const iconMap: Record<string, React.ComponentType<any>> = {
+    sun: Sun,
+    moon: Moon,
+    'cloud-sun': CloudSun,
+    cloud: Cloud,
+    'cloud-fog': CloudFog,
+    'cloud-drizzle': CloudDrizzle,
+    'cloud-rain': CloudRain,
+    'cloud-snow': CloudSnow,
+    'cloud-lightning': CloudLightning
+  };
+  const IconComponent = iconMap[iconName] || Cloud;
+  return <IconComponent className="daily__icon" />;
+};
 
 const DailyCard: React.FC<{ day: ForecastDay }> = ({ day }) => {
   const { state } = useWeather();
@@ -17,7 +33,7 @@ const DailyCard: React.FC<{ day: ForecastDay }> = ({ day }) => {
     <div className="daily__card" >
       <div className="daily__date">{date}</div>
       <div className="daily__cond">
-        {/* <img src={day.day.condition.icon} alt={day.day.condition.text} className="daily__icon" /> */}
+        {getWeatherIcon(day.day.condition.icon)}
         <div className="daily__cond-text">{day.day.condition.text}</div>
       </div>
       <div className="daily__rain">Rain: {day.day.daily_chance_of_rain}%</div>
@@ -25,7 +41,6 @@ const DailyCard: React.FC<{ day: ForecastDay }> = ({ day }) => {
       <div className="daily__min">{min}</div>
     </div>
   );
-  // console.log(day.day.condition.icon);
 };
 
 

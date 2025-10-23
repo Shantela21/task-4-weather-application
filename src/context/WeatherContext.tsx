@@ -68,13 +68,6 @@ const weatherReducer = (state: WeatherState, action: WeatherAction): WeatherStat
       return state;
   }
 };
-const test: WeatherTypes.SavedLocation = {
-  id: '1',
-  name: 'Test City',
-  country: 'Testland',
-  lat: 0,
-  lon: 0
-};
 
 
 interface WeatherContextType {

@@ -1,12 +1,27 @@
 import React from 'react';
-
 import { type WeatherAlert, type WeatherData } from '../types/weather';
 import { useWeather } from '../context/WeatherContext';
-import { Wind, Droplets } from 'lucide-react';
+import { Wind, Droplets, Sun, Moon, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudSnow, CloudLightning } from 'lucide-react';
 
 interface Props {
   data: WeatherData;
 }
+
+const getWeatherIcon = (iconName: string) => {
+  const iconMap: Record<string, React.ComponentType<any>> = {
+    sun: Sun,
+    moon: Moon,
+    'cloud-sun': CloudSun,
+    cloud: Cloud,
+    'cloud-fog': CloudFog,
+    'cloud-drizzle': CloudDrizzle,
+    'cloud-rain': CloudRain,
+    'cloud-snow': CloudSnow,
+    'cloud-lightning': CloudLightning
+  };
+  const IconComponent = iconMap[iconName] || Cloud;
+  return <IconComponent className="summary__icon" />;
+};
 
 const WeatherSummary: React.FC<Props> = ({ data }) => {
   const { state } = useWeather();
@@ -19,7 +34,7 @@ const WeatherSummary: React.FC<Props> = ({ data }) => {
           <div className="summary__title">{data.location.name}</div>
           <div className="summary__subtitle">{data.location.country}</div>
         </div>
-        <span className="summary__icon" title={data.current.condition.text}>{data.current.condition.icon}</span>
+        {getWeatherIcon(data.current.condition.icon)}
       </div>
       <div className="summary__mid">
         <div className="summary__temp">{temp}</div>

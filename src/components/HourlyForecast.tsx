@@ -1,12 +1,28 @@
 
 import React from 'react';
-
 import { type WeatherData } from '../types/weather';
 import { useWeather } from '../context/WeatherContext';
+import { Sun, Moon, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudSnow, CloudLightning } from 'lucide-react';
 
 interface Props {
   data: WeatherData;
 }
+
+const getWeatherIcon = (iconName: string) => {
+  const iconMap: Record<string, React.ComponentType<any>> = {
+    sun: Sun,
+    moon: Moon,
+    'cloud-sun': CloudSun,
+    cloud: Cloud,
+    'cloud-fog': CloudFog,
+    'cloud-drizzle': CloudDrizzle,
+    'cloud-rain': CloudRain,
+    'cloud-snow': CloudSnow,
+    'cloud-lightning': CloudLightning
+  };
+  const IconComponent = iconMap[iconName] || Cloud;
+  return <IconComponent className="hourly__icon" />;
+};
 
 const HourlyForecast: React.FC<Props> = ({ data }) => {
   const { state } = useWeather();
@@ -21,7 +37,7 @@ const HourlyForecast: React.FC<Props> = ({ data }) => {
           return (
             <div key={h.time_epoch} className="hourly__card">
               <div className="hourly__time">{time}</div>
-              <span className="hourly__icon" title={h.condition.text}>{h.condition.icon}</span>
+              {getWeatherIcon(h.condition.icon)}
               <div className="hourly__temp">{temp}</div>
               <div className="hourly__rain">{h.chance_of_rain}% rain</div>
             </div>
