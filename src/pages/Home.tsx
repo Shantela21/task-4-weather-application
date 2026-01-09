@@ -26,21 +26,49 @@ const Home: React.FC = () => {
       if (initialized) return;
       setInitialized(true);
       try {
-        const pos = await getCurrentPosition({ enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 });
+        const pos = await getCurrentPosition({ enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 });
         const coords = `${pos.coords.latitude},${pos.coords.longitude}`;
-        const data = await weatherApi.getForecastWeather(coords, 7);
-        dispatch({ type: 'SET_CURRENT_WEATHER', payload: data });
-        const currentLoc = {
-          id: 'current',
-          name: data.location.name,
-          country: data.location.country,
-          lat: data.location.lat,
-          lon: data.location.lon,
-          isCurrentLocation: true,
-        };
-        dispatch({ type: 'ADD_SAVED_LOCATION', payload: currentLoc });
-        dispatch({ type: 'SET_SELECTED_LOCATION', payload: currentLoc });
+        
+        // Validate coordinates before using
+        if (pos.coords.latitude >= -90 && pos.coords.latitude <= 90 && 
+            pos.coords.longitude >= -180 && pos.coords.longitude <= 180) {
+          const data = await weatherApi.getForecastWeather(coords, 7);
+          dispatch({ type: 'SET_CURRENT_WEATHER', payload: data });
+          const currentLoc = {
+            id: 'current',
+            name: data.location.name,
+            country: data.location.country,
+            lat: data.location.lat,
+            lon: data.location.lon,
+            isCurrentLocation: true,
+          };
+          dispatch({ type: 'ADD_SAVED_LOCATION', payload: currentLoc });
+          dispatch({ type: 'SET_SELECTED_LOCATION', payload: currentLoc });
+        } else {
+          console.error('Invalid GPS coordinates received');
+        }
       } catch (e) {
+        // Enhanced error handling for geolocation
+        if (e instanceof Error) {
+          if ('code' in e) {
+            const errorWithCode = e as Error & { code: number };
+            switch (errorWithCode.code) {
+              case 1:
+                console.log('Location access denied by user');
+                break;
+              case 2:
+                console.log('Location unavailable');
+                break;
+              case 3:
+                console.log('Location request timeout');
+                break;
+              default:
+                console.log('Unknown geolocation error');
+            }
+          } else {
+            console.log('Location error:', e.message);
+          }
+        }
         // silently ignore if denied or failed; user can search
       }
     };

@@ -6,13 +6,13 @@ export class WeatherApiService {
   private static instance: WeatherApiService;
   private cache: Map<string, { data: WeatherData; timestamp: number }> = new Map();
   private readonly CACHE_DURATION_MS = 10 * 60 * 1000; // 10 minutes
-  private readonly DEFAULT_HUMIDITY = 50;
-  private readonly DEFAULT_CLOUD = 0;
-  private readonly DEFAULT_VIS_KM = 10;
-  private readonly DEFAULT_VIS_MILES = 6.2;
-  private readonly DEFAULT_UV = 0;
-  private readonly DEFAULT_PRESSURE_MB = 1013;
-  private readonly DEFAULT_PRESSURE_IN = 29.92;
+  private readonly FALLBACK_HUMIDITY = 50;
+  private readonly FALLBACK_CLOUD = 0;
+  private readonly FALLBACK_VIS_KM = 10;
+  private readonly FALLBACK_VIS_MILES = 6.2;
+  private readonly FALLBACK_UV = 0;
+  private readonly FALLBACK_PRESSURE_MB = 1013;
+  private readonly FALLBACK_PRESSURE_IN = 29.92;
 
   public static getInstance(): WeatherApiService {
     if (!WeatherApiService.instance) {
@@ -33,9 +33,22 @@ export class WeatherApiService {
     try {
       const response = await fetch(url, { headers: { 'User-Agent': 'WeatherApp/1.0' } });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return await response.json();
+      const data = await response.json();
+      
+      if (!data) {
+        throw new Error('Empty response from weather API');
+      }
+      
+      if (data.error) {
+        throw new Error(`Weather API error: ${data.error}`);
+      }
+      
+      return data;
     } catch (error) {
-      throw new Error(`Failed to fetch data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch weather data: ${error.message}`);
+      }
+      throw new Error('Failed to fetch weather data: Unknown error');
     }
   }
 
@@ -48,23 +61,121 @@ export class WeatherApiService {
     if (coordMatch) {
       const lat = parseFloat(coordMatch[1]);
       const lon = parseFloat(coordMatch[3]);
-      return { lat, lon, name: 'Current Location', country: 'Unknown', admin1: 'Unknown' };
+      
+      if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        throw new Error('Invalid coordinates. Please use format: latitude,longitude (e.g., 40.7128,-74.0060)');
+      }
+      
+      // Try to get location name for coordinates
+      try {
+        const NOMINATIM_REVERSE_API = 'https://nominatim.openstreetmap.org/reverse';
+        const reverseUrl = `${NOMINATIM_REVERSE_API}?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=10`;
+        const reverseData = await this.makeRequest(reverseUrl);
+        
+        if (reverseData && reverseData.address) {
+          const cityName = reverseData.address.city || 
+                          reverseData.address.town || 
+                          reverseData.address.village || 
+                          reverseData.address.county ||
+                          reverseData.display_name.split(',')[0] || 
+                          'Current Location';
+          
+          const countryName = reverseData.address.country || 'Unknown';
+          const regionName = reverseData.address.state || 
+                           reverseData.address.region || 
+                           reverseData.address.county || 
+                           '';
+          
+          console.log('Reverse geocoding successful:', { cityName, countryName, regionName });
+          
+          return {
+            lat,
+            lon,
+            name: cityName,
+            country: countryName,
+            admin1: regionName
+          };
+        }
+      } catch (error) {
+        console.log('Reverse geocoding failed, using coordinates as location name');
+        // Continue with coordinate-based location if reverse geocoding fails
+      }
+      
+      // Better fallback: show coordinates instead of "Unknown"
+      return { 
+        lat, 
+        lon, 
+        name: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, 
+        country: 'Current Location', 
+        admin1: '' 
+      };
     }
 
+    // Enhanced search with multiple strategies
     const NOMINATIM_API = 'https://nominatim.openstreetmap.org/search';
-    const url = `${NOMINATIM_API}?q=${encodeURIComponent(cleanQuery)}&format=json&limit=5&addressdetails=1`;
-    const data = await this.makeRequest(url);
+    const searchStrategies = [
+      // Primary search with full address details
+      `${NOMINATIM_API}?q=${encodeURIComponent(cleanQuery)}&format=json&limit=5&addressdetails=1`,
+      // Fallback: city-specific search
+      `${NOMINATIM_API}?city=${encodeURIComponent(cleanQuery)}&format=json&limit=3&addressdetails=1`,
+      // Fallback: more general search
+      `${NOMINATIM_API}?q=${encodeURIComponent(cleanQuery)}&format=json&limit=3`
+    ];
 
-    if (!data || data.length === 0) throw new Error(`No location found for "${cleanQuery}".`);
+    let lastError: Error | null = null;
+    
+    for (const url of searchStrategies) {
+      try {
+        const data = await this.makeRequest(url);
 
-    const result = data[0];
-    return {
-      lat: parseFloat(result.lat),
-      lon: parseFloat(result.lon),
-      name: result.display_name.split(',')[0],
-      country: result.address.country || 'Unknown',
-      admin1: result.address.state || result.address.region || result.address.county || 'Unknown'
-    };
+        if (!data || data.length === 0) continue;
+
+        // Find the best result based on importance and relevance
+        const bestResult = data
+          .filter((result: any) => {
+            const lat = parseFloat(result.lat);
+            const lon = parseFloat(result.lon);
+            return !isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+          })
+          .sort((a: any, b: any) => {
+            // Prioritize by importance, then by exact name match
+            const aImportance = a.importance || 0;
+            const bImportance = b.importance || 0;
+            if (aImportance !== bImportance) return bImportance - aImportance;
+            
+            const aName = (a.display_name.split(',')[0] || '').toLowerCase();
+            const bName = (b.display_name.split(',')[0] || '').toLowerCase();
+            const queryLower = cleanQuery.toLowerCase();
+            
+            if (aName === queryLower && bName !== queryLower) return -1;
+            if (bName === queryLower && aName !== queryLower) return 1;
+            
+            return 0;
+          })[0];
+
+        if (bestResult) {
+          const lat = parseFloat(bestResult.lat);
+          const lon = parseFloat(bestResult.lon);
+          
+          return {
+            lat,
+            lon,
+            name: bestResult.display_name.split(',')[0],
+            country: bestResult.address.country || 'Unknown',
+            admin1: bestResult.address.state || bestResult.address.region || bestResult.address.county || 'Unknown'
+          };
+        }
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('Unknown geocoding error');
+        continue;
+      }
+    }
+
+    if (lastError) {
+      throw new Error(`Location search failed: ${lastError.message}`);
+    }
+    
+    throw new Error(`No location found for "${cleanQuery}". Try a more specific search or check spelling.`);
   }
 
   // --- Weather helpers ---
@@ -155,18 +266,25 @@ export class WeatherApiService {
         maxwind_kph: this.msToKmph(daily.wind_speed_10m_max[index]),
         totalprecip_mm: Math.round(daily.precipitation_sum[index] * 10) / 10,
         totalprecip_in: Math.round((daily.precipitation_sum[index] / 25.4) * 100) / 100,
+        totalsnow_cm: 0,
+        avgvis_km: this.FALLBACK_VIS_KM,
+        avgvis_miles: this.FALLBACK_VIS_MILES,
+        avghumidity: this.FALLBACK_HUMIDITY,
+        daily_will_it_rain: daily.precipitation_sum[index] > 0 ? 1 : 0,
         daily_chance_of_rain: this.calculateRainChance(daily.precipitation_sum[index], daily.weathercode[index]),
+        daily_will_it_snow: 0,
+        daily_chance_of_snow: 0,
         condition: {
           text: this.wmoToText(daily.weathercode[index]),
           icon: this.getWeatherIcon(daily.weathercode[index]),
           code: daily.weathercode[index]
         },
-        uv: this.DEFAULT_UV
+        uv: daily.uv_index_max?.[index] ?? this.FALLBACK_UV
       },
       astro: {
         sunrise: daily.sunrise?.[index] || '06:00',
         sunset: daily.sunset?.[index] || '18:00',
-        moonrise: '00:00', // Not available in Open-Meteo free tier
+        moonrise: '00:00',
         moonset: '00:00',
         moon_phase: 'New Moon',
         moon_illumination: '0'
@@ -184,6 +302,10 @@ private processHourlyForecastForDate(date: string, hourly: {
   windspeed_10m: number[];
   winddirection_10m: number[];
   is_day?: number[];
+  relativehumidity_2m?: number[];
+  pressure_msl?: number[];
+  visibility?: number[];
+  uv_index?: number[];
 }): any[] {
   if (!hourly || !hourly.time) return [];
 
@@ -209,28 +331,48 @@ private processHourlyForecastForDate(date: string, hourly: {
     wind_mph: this.msToMph(hourly.windspeed_10m[index]),
     wind_kph: this.msToKmph(hourly.windspeed_10m[index]),
     wind_dir: this.getWindDirection(hourly.winddirection_10m[index]),
+    wind_degree: hourly.winddirection_10m[index],
     precip_mm: Math.round(hourly.precipitation[index] * 10) / 10,
     precip_in: Math.round((hourly.precipitation[index] / 25.4) * 100) / 100,
     chance_of_rain: this.calculateRainChance(hourly.precipitation[index], hourly.weathercode[index]),
     feelslike_c: Math.round(hourly.apparent_temperature[index] * 10) / 10,
-    feelslike_f: this.celsiusToFahrenheit(hourly.apparent_temperature[index])
+    feelslike_f: this.celsiusToFahrenheit(hourly.apparent_temperature[index]),
+    humidity: hourly.relativehumidity_2m?.[index] ?? this.FALLBACK_HUMIDITY,
+    pressure_mb: hourly.pressure_msl?.[index] ?? this.FALLBACK_PRESSURE_MB,
+    pressure_in: Math.round(((hourly.pressure_msl?.[index] ?? this.FALLBACK_PRESSURE_MB) / 33.864) * 100) / 100,
+    vis_km: hourly.visibility?.[index] ?? this.FALLBACK_VIS_KM,
+    vis_miles: Math.round(((hourly.visibility?.[index] ?? this.FALLBACK_VIS_KM) / 1.609) * 100) / 100,
+    uv: hourly.uv_index?.[index] ?? this.FALLBACK_UV,
+    gust_mph: this.msToMph(hourly.windspeed_10m[index]),
+    gust_kph: this.msToKmph(hourly.windspeed_10m[index])
   }));
 }
   // --- Main forecast fetch ---
   public async getForecastWeather(query: string, days: number = 7): Promise<WeatherData> {
     const cacheKey = this.getCacheKey(query, days);
     const cached = this.cache.get(cacheKey);
+    
+    // Clear cache if it contains "Unknown" location data to force refresh
+    if (cached && cached.data.location && 
+        (cached.data.location.country === 'Unknown' || cached.data.location.name === 'Unknown')) {
+      console.log('Clearing cache with Unknown location data for query:', query);
+      this.cache.delete(cacheKey);
+    }
+    
     if (cached && this.isValidCache(cached.timestamp)) return cached.data;
 
     const location = await this.geocode(query);
     const { lat, lon, name, country } = location;
+    
+    // Debug logging to see what we get from geocoding
+    console.log('Geocoded location:', { name, country, lat, lon });
 
     const params = new URLSearchParams({
       latitude: lat.toString(),
       longitude: lon.toString(),
       current_weather: 'true',
-      hourly: 'temperature_2m,weathercode,apparent_temperature,precipitation,windspeed_10m,winddirection_10m,is_day',
-      daily: 'temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,sunrise,sunset',
+      hourly: 'temperature_2m,weathercode,apparent_temperature,precipitation,windspeed_10m,winddirection_10m,is_day,relativehumidity_2m,pressure_msl,visibility,uv_index',
+      daily: 'temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,sunrise,sunset,uv_index_max,precipitation_hours',
       timezone: 'auto',
       forecast_days: days.toString()
     });
@@ -238,7 +380,12 @@ private processHourlyForecastForDate(date: string, hourly: {
     const data = await this.makeRequest(`${OM_FORECAST}?${params.toString()}`);
 
     const weatherData: WeatherData = {
-      location: { name, country, lat, lon },
+      location: { 
+        name: name || 'Current Location', 
+        country: country || 'Current Location', 
+        lat, 
+        lon 
+      },
       current: {
         temp_c: Math.round(data.current_weather.temperature * 10) / 10,
         temp_f: this.celsiusToFahrenheit(data.current_weather.temperature),
@@ -250,17 +397,17 @@ private processHourlyForecastForDate(date: string, hourly: {
         wind_mph: this.msToMph(data.current_weather.windspeed_10m),
         wind_kph: this.msToKmph(data.current_weather.windspeed_10m),
         wind_dir: this.getWindDirection(data.current_weather.winddirection_10m),
-        pressure_mb: this.DEFAULT_PRESSURE_MB,
-        pressure_in: this.DEFAULT_PRESSURE_IN,
-        precip_mm: data.current_weather.precipitation,
-        precip_in: Math.round(data.current_weather.precipitation / 25.4 * 100) / 100,
-        humidity: this.DEFAULT_HUMIDITY,
-        cloud: this.DEFAULT_CLOUD,
+        pressure_mb: data.hourly?.pressure_msl?.[0] ?? this.FALLBACK_PRESSURE_MB,
+        pressure_in: Math.round(((data.hourly?.pressure_msl?.[0] ?? this.FALLBACK_PRESSURE_MB) / 33.864) * 100) / 100,
+        precip_mm: data.current_weather.precipitation ?? 0,
+        precip_in: Math.round((data.current_weather.precipitation ?? 0) / 25.4 * 100) / 100,
+        humidity: data.hourly?.relativehumidity_2m?.[0] ?? this.FALLBACK_HUMIDITY,
+        cloud: this.FALLBACK_CLOUD,
         feelslike_c: Math.round(data.current_weather.apparent_temperature * 10) / 10,
         feelslike_f: this.celsiusToFahrenheit(data.current_weather.apparent_temperature),
-        vis_km: this.DEFAULT_VIS_KM,
-        vis_miles: this.DEFAULT_VIS_MILES,
-        uv: this.DEFAULT_UV,
+        vis_km: data.hourly?.visibility?.[0] ?? this.FALLBACK_VIS_KM,
+        vis_miles: Math.round(((data.hourly?.visibility?.[0] ?? this.FALLBACK_VIS_KM) / 1.609) * 100) / 100,
+        uv: data.hourly?.uv_index?.[0] ?? this.FALLBACK_UV,
         gust_mph: this.msToMph(data.current_weather.windspeed_10m),
         gust_kph: this.msToKmph(data.current_weather.windspeed_10m)
       },
@@ -286,6 +433,15 @@ private processHourlyForecastForDate(date: string, hourly: {
           const cached = localStorage.getItem(k);
           if (cached) {
             const { data, timestamp } = JSON.parse(cached);
+            
+            // Skip loading cache with "Unknown" location data
+            if (data.location && 
+                (data.location.country === 'Unknown' || data.location.name === 'Unknown')) {
+              console.log('Skipping cache with Unknown location:', k);
+              localStorage.removeItem(k);
+              return;
+            }
+            
             const cacheKey = k.replace('weatherCache_', '');
             this.cache.set(cacheKey, { data, timestamp });
           }
@@ -301,20 +457,75 @@ private processHourlyForecastForDate(date: string, hourly: {
   // --- Location search ---
   public async searchLocations(query: string): Promise<any[]> {
     if (query.length < 2) return [];
+    
+    const cleanQuery = query.trim();
+    
+    // Check if it's coordinates first
+    const coordMatch = cleanQuery.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+    if (coordMatch) {
+      const lat = parseFloat(coordMatch[1]);
+      const lon = parseFloat(coordMatch[3]);
+      
+      if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        return [];
+      }
+      
+      // Reverse geocode to get location name for coordinates
+      try {
+        const NOMINATIM_REVERSE_API = 'https://nominatim.openstreetmap.org/reverse';
+        const reverseUrl = `${NOMINATIM_REVERSE_API}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+        const reverseData = await this.makeRequest(reverseUrl);
+        
+        if (reverseData && reverseData.address) {
+          return [{
+            id: `${lat},${lon}`,
+            name: reverseData.display_name.split(',')[0] || 'Unknown Location',
+            region: reverseData.address.state || reverseData.address.region || reverseData.address.county || '',
+            country: reverseData.address.country || 'Unknown',
+            lat,
+            lon
+          }];
+        }
+      } catch (error) {
+        // If reverse geocoding fails, still return coordinate result
+      }
+      
+      return [{
+        id: `${lat},${lon}`,
+        name: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+        region: '',
+        country: 'Coordinates',
+        lat,
+        lon
+      }];
+    }
+    
     const NOMINATIM_API = 'https://nominatim.openstreetmap.org/search';
-    const url = `${NOMINATIM_API}?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
+    const url = `${NOMINATIM_API}?q=${encodeURIComponent(cleanQuery)}&format=json&limit=5&addressdetails=1`;
     const data = await this.makeRequest(url);
 
     if (!data || data.length === 0) return [];
 
-    return data.map((result: any) => ({
-      id: `${result.lat},${result.lon}`,
-      name: result.display_name.split(',')[0],
-      region: result.address.state || result.address.region || result.address.county || result.address.country,
-      country: result.address.country,
-      lat: parseFloat(result.lat),
-      lon: parseFloat(result.lon)
-    }));
+    return data.map((result: any) => {
+      const lat = parseFloat(result.lat);
+      const lon = parseFloat(result.lon);
+      
+      if (isNaN(lat) || isNaN(lon)) {
+        return null;
+      }
+      
+      return {
+        id: `${lat},${lon}`,
+        name: result.display_name.split(',')[0],
+        region: result.address.state || result.address.region || result.address.county || '',
+        country: result.address.country,
+        lat,
+        lon,
+        importance: result.importance || 0,
+        class: result.class || '',
+        type: result.type || ''
+      };
+    }).filter(Boolean).sort((a: any, b: any) => (b.importance || 0) - (a.importance || 0));
   }
 }
 

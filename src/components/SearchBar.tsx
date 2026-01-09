@@ -52,22 +52,60 @@ const SearchBar: React.FC = () => {
       if (data && data.length) {
         onSelect(data[0]);
       } else {
-        // Fallback: directly fetch forecast by free-text query and use response location
-        const wx = await weatherApi.getForecastWeather(q, 7);
-        const loc: SavedLocation = {
-          id: `${wx.location.lat},${wx.location.lon}`,
-          name: wx.location.name,
-          country: wx.location.country,
-          lat: wx.location.lat,
-          lon: wx.location.lon,
-        };
-        dispatch({ type: 'ADD_SAVED_LOCATION', payload: loc });
-        dispatch({ type: 'SET_SELECTED_LOCATION', payload: loc });
-        // Optionally set weather immediately for snappier UX
-        dispatch({ type: 'SET_CURRENT_WEATHER', payload: wx });
+        // Enhanced fallback: try multiple approaches
+        try {
+          // Try direct forecast first
+          const wx = await weatherApi.getForecastWeather(q, 7);
+          const loc: SavedLocation = {
+            id: `${wx.location.lat},${wx.location.lon}`,
+            name: wx.location.name,
+            country: wx.location.country,
+            lat: wx.location.lat,
+            lon: wx.location.lon,
+          };
+          dispatch({ type: 'ADD_SAVED_LOCATION', payload: loc });
+          dispatch({ type: 'SET_SELECTED_LOCATION', payload: loc });
+          dispatch({ type: 'SET_CURRENT_WEATHER', payload: wx });
+        } catch (forecastError) {
+          // If forecast fails, try coordinate parsing
+          const coordMatch = q.match(/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/);
+          if (coordMatch) {
+            const lat = parseFloat(coordMatch[1]);
+            const lon = parseFloat(coordMatch[3]);
+            
+            if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+              const loc: SavedLocation = {
+                id: `${lat},${lon}`,
+                name: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+                country: 'Coordinates',
+                lat,
+                lon,
+              };
+              dispatch({ type: 'ADD_SAVED_LOCATION', payload: loc });
+              dispatch({ type: 'SET_SELECTED_LOCATION', payload: loc });
+              
+              // Try to get weather for these coordinates
+              try {
+                const wx = await weatherApi.getForecastWeather(`${lat},${lon}`, 7);
+                dispatch({ type: 'SET_CURRENT_WEATHER', payload: wx });
+              } catch (weatherError) {
+                // Even if weather fails, we've set the location
+              }
+            } else {
+              throw new Error('Invalid coordinates format');
+            }
+          } else {
+            throw new Error('Location not found');
+          }
+        }
         setQuery('');
         setResults([]);
       }
+    } catch (error) {
+      // Enhanced error handling
+      const errorMessage = error instanceof Error ? error.message : 'Search failed';
+      console.error('Location search error:', errorMessage);
+      // You could add user notification here
     } finally {
       setLoading(false);
     }
