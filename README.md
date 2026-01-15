@@ -1,6 +1,6 @@
 <img src="https://socialify.git.ci/Shantela21/task-4-weather-application/image?language=1&owner=1&name=1&stargazers=1&theme=Light" alt="task-4-weather-application" width="640" height="320" />
 
-# WeatherNow - Modern Weather Application
+# Weather APP
 
 A comprehensive weather application that provides real-time weather data, forecasts, and location-based weather information. Built with modern React, TypeScript, and integrated with professional weather APIs to deliver accurate and detailed weather insights.
 
@@ -94,6 +94,8 @@ npm run dev
 4. **Open your browser:**
 Navigate to [http://localhost:5173](http://localhost:5173)
 
+5. Live Demo: https://weather-application-g205.onrender.com/
+
 ### Production Build
 
 ```bash
@@ -176,9 +178,7 @@ Feel free to submit issues or pull requests! Please follow the existing code sty
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 
@@ -187,5 +187,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Project: [WeatherNow](https://github.com/Shantela21/task-4-weather-application)
 
 ---
-
-⭐ **Star this repository** if you find this weather application helpful!
