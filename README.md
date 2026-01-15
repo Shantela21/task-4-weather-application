@@ -69,6 +69,7 @@ yarn dev
 ```
  Open http://localhost:5173
  to view the app in your browser.
+ 
  Live Demo https://weather-application-g205.onrender.com/
 
  ## Preview the production build:
